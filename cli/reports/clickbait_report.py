@@ -1,4 +1,6 @@
 from reports.base import BaseReport
+from utils.data_formatter import extract_columns
+from utils.file_reader import read_files
 
 
 class ClickbaitReport(BaseReport):
@@ -9,14 +11,18 @@ class ClickbaitReport(BaseReport):
         self.__retention_rate_max_filter = 40
 
     def generate(self, files: list[str]) -> list[dict[str, str]]:
-        data = []
+        needed_data = []
         
-        file_reader = self._read_files(
-            files, 
-            self.__needed_columns
+        file_reader = read_files(
+            files=files
         )
         for data_from_file in file_reader:
-            for i, row in enumerate(data_from_file):
+            filtered_data = extract_columns(
+                data=data_from_file,
+                needed_columns=self.__needed_columns
+            )
+            for row in filtered_data:
+                print(row)
                 ctr = float(row.get(
                     "ctr", 
                     self.__ctr_min_filter
@@ -26,10 +32,10 @@ class ClickbaitReport(BaseReport):
                     self.__retention_rate_max_filter
                 ))
                 if ctr > self.__ctr_min_filter and retention_rate < self.__retention_rate_max_filter:
-                    data.append(data_from_file[i])
+                    needed_data.append(row)
 
-        data.sort(
-            key=lambda x: float(x.get("ctr", 0)), 
+        needed_data.sort(
+            key=lambda x: float(x.get("ctr", 0)),
             reverse=True
         )
-        return data
+        return needed_data

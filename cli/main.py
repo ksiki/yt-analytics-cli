@@ -1,5 +1,7 @@
+import logging
 import sys
 import argparse
+from typing import Final
 
 import handler
 from config import (
@@ -9,6 +11,10 @@ from config import (
     REPORT_ARG,
     REPORT_ARG_CFG
 )
+
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger: Final[logging.Logger] = logging.getLogger(__name__)
 
 
 def main() -> None:
@@ -26,13 +32,13 @@ def main() -> None:
     try:
         handler.run(cfg)
     except Exception as e:
-        print(f"\nError-{e}")
+        logger.error(f"{e}")
     finally:
         exit()
 
 
 def exit() -> None:
-    print("\nExit")
+    logger.info("Exit")
     sys.exit(130)
 
 

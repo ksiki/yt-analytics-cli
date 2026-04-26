@@ -19,4 +19,4 @@ def run(cfg: StartCfg) -> None:
         data = generator.generate(cfg.files)
         write_data(data)
     except ImportError:
-        raise ImportError(f"Report type '{cfg.report_type}' not exists")
+        raise ImportError(f"{__name__}: Report type '{cfg.report_type}' not exists")
